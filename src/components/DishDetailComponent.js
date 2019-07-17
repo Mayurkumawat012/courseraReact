@@ -4,6 +4,7 @@ import 'font-awesome/css/font-awesome.min.css'
 import "bootstrap/dist/css/bootstrap.min.css"
 import {Link} from 'react-router-dom'
 import {Control,LocalForm,Errors} from 'react-redux-form'
+import { Loading } from './LoadingComponent';
 
 const required =(val) =>val&&val.length;
 const maxLength = (len)=>(val)=>!(val)||(val.length<=len)
@@ -116,94 +117,116 @@ class CommentForm extends Component {
 
 
 
-const Dishdetail = ({dish,comments,addComment})=>{
-    
+const Dishdetail = ({dish,comments,addComment,isLoading,errMess})=>{
+    if (isLoading)
+    {
+        return(
+            <div className="container">
+            <div className="row">
+                <Loading />
+            </div>
+            </div>
+        );
+    }
+    else if(errMess)
+    {
+        return(
+            <div className="container">
+            <div className="row">
+                <h4>{errMess}</h4>
+            </div>
+            </div>
+        );
+    }
+    else
+    {   
         return ( 
-            <React.Fragment>  
-            <RenderDish dish={dish} comments={comments} addComment={addComment}/>
-            </React.Fragment>
-        );    
+        <React.Fragment>  
+        <RenderDish dish={dish} comments={comments} addComment={addComment}/>
+        </React.Fragment>
+    );    
+    }
 }
 
 function formatDate(date)
 {
-    const option = {year: 'numeric', month: 'short', day: 'numeric' };
-    const date1 = new Date(date)
-    const newdate = date1.toLocaleDateString("en-US", option)
-    return newdate;
+const option = {year: 'numeric', month: 'short', day: 'numeric' };
+const date1 = new Date(date)
+const newdate = date1.toLocaleDateString("en-US", option)
+return newdate;
 
 }
 
 
 const RenderComments =({comments,addComment,dishId}) =>
-    {
+{
 
-        if (comments!=null)
-        {
-            const com = comments.map(co=>{
-                    
-                    return(
-                    <React.Fragment>
-                    <li>{co.comment}</li><br />
-                    <li>-- {co.author}, {formatDate(co.date)}</li><br />
-                    </React.Fragment>
-                )
-                    
-                }
-                );
-            return(
-                <ul className="list-unstyled">
-                {com}
-                <CommentForm dishId={dishId} addComment={addComment}/>
-                </ul>
+    if (comments!=null)
+    {
+        const com = comments.map(co=>{
                 
+                return(
+                <React.Fragment>
+                <li>{co.comment}</li><br />
+                <li>-- {co.author}, {formatDate(co.date)}</li><br />
+                </React.Fragment>
             )
-        }
-        else{
-            return(<div></div>)
-        }
+                
+            }
+            );
+        return(
+            <ul className="list-unstyled">
+            {com}
+            <CommentForm dishId={dishId} addComment={addComment}/>
+            </ul>
+            
+        )
     }
+    else{
+        return(<div></div>)
+    }
+}
 
 const RenderDish=({dish,comments,addComment})=>
+{
+    if (dish!=null)
     {
-        if (dish!=null)
-        {
-            return(
-            <div className="container">
-             <div className="row">
-            <Breadcrumb>
-                <BreadcrumbItem><Link to='/home'>Home</Link></BreadcrumbItem>
-                <BreadcrumbItem><Link to='/menu'>Menu</Link></BreadcrumbItem>
-                <BreadcrumbItem active>{dish.name}</BreadcrumbItem>
-            </Breadcrumb>
-            <div className="col-12 m-1">
-            <h3>{dish.name}</h3>
-            </div>
-            </div>
-            <div className="row">
-            <div className="col-12 col-md-5 m-1">
-            <Card>
-                <CardImg width="100%" src={dish.image} alt={dish.name} />
-                <CardBody>
-                    <CardTitle>{dish.name}</CardTitle>
-                    <CardText>{dish.description}</CardText>
-                </CardBody>
-            </Card>
-            </div>
-            <div className="col-12 col-md-5 m-1" >
-            <h4>Comments</h4>
-            <RenderComments comments={comments}
-            addComment={addComment}
-            dishId={dish.id}/>
-            </div>
-            </div>
-            </div >
-            )
-        }
-        else{
-            return(<div></div>)
-        }
+        return(
+        <div className="container">
+         <div className="row">
+        <Breadcrumb>
+            <BreadcrumbItem><Link to='/home'>Home</Link></BreadcrumbItem>
+            <BreadcrumbItem><Link to='/menu'>Menu</Link></BreadcrumbItem>
+            <BreadcrumbItem active>{dish.name}</BreadcrumbItem>
+        </Breadcrumb>
+        <div className="col-12 m-1">
+        <h3>{dish.name}</h3>
+        </div>
+        </div>
+        <div className="row">
+        <div className="col-12 col-md-5 m-1">
+        <Card>
+            <CardImg width="100%" src={dish.image} alt={dish.name} />
+            <CardBody>
+                <CardTitle>{dish.name}</CardTitle>
+                <CardText>{dish.description}</CardText>
+            </CardBody>
+        </Card>
+        </div>
+        <div className="col-12 col-md-5 m-1" >
+        <h4>Comments</h4>
+        <RenderComments comments={comments}
+        addComment={addComment}
+        dishId={dish.id}/>
+        </div>
+        </div>
+        </div >
+        )
     }
+    else{
+        return(<div></div>)
+    }
+}
 
- 
+
 export default Dishdetail;
