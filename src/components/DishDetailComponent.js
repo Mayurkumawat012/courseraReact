@@ -35,6 +35,7 @@ class CommentForm extends Component {
     {
         this.handleToggle();
         this.props.postComment(this.props.dishId,values.rating,values.author,values.comment)
+       
         
     }
     render() { 
